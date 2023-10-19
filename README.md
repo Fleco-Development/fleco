@@ -8,7 +8,7 @@ This will be updated as time goes on adding on the features of the bot.
 
 More deployment features will also be added.
 
-## Delpyments
+## Delpoyments
 
 - [Pterodactyl Installation](./PTERO_INSTALL.md)
 
@@ -56,4 +56,3 @@ npm run start -- --config test_config.yml
 ```bash
 pnpm run start --config test_config.yml
 ```
-
