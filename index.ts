@@ -1,5 +1,5 @@
-import { Client, GatewayIntentBits } from "discord.js";
-import { Config } from "./types.js";
+import { Client, Events, GatewayIntentBits, Interaction } from "discord.js";
+import { Command, Config } from "./types.js";
 import { program } from "commander";
 import { parse } from "yaml";
 import { loadCommands } from "./handlers/loaders/command.js";
@@ -58,6 +58,9 @@ const client = new Client({ //We probably don't need all of these intents. But f
     ],
 });
 
+
+
+
 client.once("ready", async c => {
     console.info(`Logged in as ${c.user.tag}`);
 
@@ -74,7 +77,25 @@ client.once("ready", async c => {
 
     }
 
-    loadCommands(commandDir);
+    let commandMap = await loadCommands(client, commandDir);
+
+    console.log(commandMap);
+
+    client.addListener(Events.InteractionCreate, (e) => interactionCreate(e, commandMap)); //TODO: Remove this when event loader is fully made.
+
+
 });
+
+async function interactionCreate(i: Interaction, commandMap: Map<string,Command>) {
+
+    if (!i.isCommand()) return;
+    
+    const command = commandMap.get(i.commandName);
+
+    await command?.execute(i);
+
+}
+
+
 
 client.login(config.token);

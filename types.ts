@@ -1,4 +1,4 @@
-import { ApplicationCommandData, CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 export interface Config {
     token: string,
@@ -6,9 +6,10 @@ export interface Config {
 
 export abstract class Command { //Unpopular opinion, I like using classes for commands.
 
-    commandData: ApplicationCommandData
+    public commandData: SlashCommandBuilder;
+    public filePath: string | undefined;
 
-    constructor(appCommandData: ApplicationCommandData) {
+    constructor(appCommandData: SlashCommandBuilder) {
         this.commandData = appCommandData;
     }
 
