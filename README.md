@@ -2,9 +2,11 @@
 
 This is a proof of concept for Fleco. designed to work with the latest discord.js version. The changes include a switch to typescript for types, addition of eslint rules, multiple package managers and multiple runtimes (NodeJS & Bun).
 
-I feel it is important that these changes are implemented for a better development expierence and to try to keep the codebase neater.
+I feel it is important that these changes are implemented for a better development expierence and to try to keep the codebase neater. With the multiple runtimes, why not?
 
 This will be updated as time goes on adding on the features of the bot.
+
+More deployment features will also be added.
 
 ## How to Install
 
