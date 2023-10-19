@@ -1,17 +1,18 @@
 import { Client, GatewayIntentBits } from "discord.js";
+import { Config } from "./types.js";
 import { program } from "commander";
 import { parse } from "yaml";
-
-interface Config {
-    token: string,
-}
 
 program
     .option("-c, --config <string>", "Path to config file (e.g. /opt/config.yml)")
 
 program.parse(process.argv);
 
-const configPath : string = program.opts().config;
+let configPath : string | undefined = program.opts().config;
+
+if (!configPath) {
+    configPath = "config.yml"
+}
 
 let config : Config;
 
