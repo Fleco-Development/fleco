@@ -2,6 +2,8 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { Config } from "./types.js";
 import { program } from "commander";
 import { parse } from "yaml";
+import { loadCommands } from "./handlers/loaders/command.js";
+import path from "node:path";
 
 program
     .option("-c, --config <string>", "Path to config file (e.g. /opt/config.yml)")
@@ -56,8 +58,23 @@ const client = new Client({ //We probably don't need all of these intents. But f
     ],
 });
 
-client.once("ready", c => {
+client.once("ready", async c => {
     console.info(`Logged in as ${c.user.tag}`);
+
+    let commandDir : string;
+
+    if (process.versions.bun) {
+
+        commandDir = path.join(path.dirname(Bun.main), "commands");
+
+    } else {
+
+        const { fileURLToPath } = await import("node:url");
+        commandDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "commands");
+
+    }
+
+    loadCommands(commandDir);
 });
 
 client.login(config.token);
