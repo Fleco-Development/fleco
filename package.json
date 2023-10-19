@@ -1,0 +1,33 @@
+{
+  "name": "fleco",
+  "version": "0.1.0",
+  "description": "I am a community-driven economy Discord bot, my goal is to provide the best economy experience in your Discord Guild for your server's members, I hope I succeed at this!",
+  "main": "dist/index.ts",
+  "type": "module",
+  "scripts": {
+    "start:bun": "bun run index.ts",
+    "start": "tsc && node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fleco-Development/fleco.git"
+  },
+  "author": "Fleco Development",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fleco-Development/fleco/issues"
+  },
+  "homepage": "https://github.com/Fleco-Development/fleco#readme",
+  "dependencies": {
+    "bufferutil": "^4.0.8",
+    "commander": "^11.1.0",
+    "discord.js": "^14.13.0",
+    "utf-8-validate": "^6.0.3",
+    "yaml": "^2.3.3",
+    "zlib-sync": "^0.1.8"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.6",
+    "eslint": "^8.51.0"
+  }
+}
