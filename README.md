@@ -8,6 +8,10 @@ This will be updated as time goes on adding on the features of the bot.
 
 More deployment features will also be added.
 
+## Delpyments
+
+- [Pterodactyl Installation](./PTERO_INSTALL.md)
+
 ## How to Install
 
 ### NodeJS
