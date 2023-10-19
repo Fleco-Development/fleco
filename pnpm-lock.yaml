@@ -8,17 +8,26 @@ dependencies:
   bufferutil:
     specifier: ^4.0.8
     version: 4.0.8
+  commander:
+    specifier: ^11.1.0
+    version: 11.1.0
   discord.js:
     specifier: ^14.13.0
     version: 14.13.0(bufferutil@4.0.8)(utf-8-validate@6.0.3)
   utf-8-validate:
     specifier: ^6.0.3
     version: 6.0.3
+  yaml:
+    specifier: ^2.3.3
+    version: 2.3.3
   zlib-sync:
     specifier: ^0.1.8
     version: 0.1.8
 
 devDependencies:
+  bun-types:
+    specifier: ^1.0.6
+    version: 1.0.6
   eslint:
     specifier: ^8.51.0
     version: 8.51.0
@@ -264,6 +273,10 @@ packages:
       node-gyp-build: 4.6.1
     dev: false
 
+  /bun-types@1.0.6:
+    resolution: {integrity: sha512-5QwynfXiRCRxPW3ZnC0Dv+sHHmctP4SHIuzsRKOWYO0HF/qUpsxQVexoviaxpmwDsF1hoVDDFdc4xUuafOzx1g==}
+    dev: true
+
   /busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
     engines: {node: '>=10.16.0'}
@@ -294,6 +307,11 @@ packages:
   /color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
+
+  /commander@11.1.0:
+    resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
+    engines: {node: '>=16'}
+    dev: false
 
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -869,6 +887,11 @@ packages:
     dependencies:
       bufferutil: 4.0.8
       utf-8-validate: 6.0.3
+    dev: false
+
+  /yaml@2.3.3:
+    resolution: {integrity: sha512-zw0VAJxgeZ6+++/su5AFoqBbZbrEakwu+X0M5HmcwUiBL7AzcuPKjj5we4xfQLp78LkEMpD0cOnUhmgOVy3KdQ==}
+    engines: {node: '>= 14'}
     dev: false
 
   /yocto-queue@0.1.0:
