@@ -1,6 +1,8 @@
 # Installation with Ptero eggs
 
-## NodeJS Generic by @parkervcp
+## NodeJS Generic
+
+*By @parkervcp*
 
 Change all of these under `Startup / Variables`:
 
@@ -9,7 +11,9 @@ Change all of these under `Startup / Variables`:
 - Auto Update = `true`
 - Main File = `index.ts`
 
-## Eggactyl by @shanecaf
+## Eggactyl
+
+*By @shanecaf*
 
 Uhhh.... Welp. I will add the capability for this before this releases, so here it is:
 
