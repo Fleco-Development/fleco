@@ -11,6 +11,12 @@ Change all of these under `Startup / Variables`:
 - Auto Update = `true`
 - Main File = `index.ts`
 
+The default config file is: `config.yml`
+
+If you would like to change the config path, you can add this to the Additional Arguments variable:
+
+`--config /path/to/config.yml`
+
 ## Eggactyl
 
 *By @shanecaf*
@@ -24,3 +30,7 @@ Change all of these under `Startup / Variables`:
 - Git Repo = `https://github.com.Fleco-Development/fleco.git`
 - Git Branch = `proof_of_concept`
 - Bot File Name = `src/index.js`
+
+The default config file is: `config.yml`
+
+*Currently does not have the capability to change the config file.*
