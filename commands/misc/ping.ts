@@ -8,6 +8,7 @@ export default class PingCommand extends Command {
             new SlashCommandBuilder()
                 .setName("ping")
                 .setDescription("Current latency of bot.")
+                .setDMPermission(false)
         )
     }
 
