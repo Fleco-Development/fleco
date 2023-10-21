@@ -4,17 +4,17 @@ import path from "node:path";
 import { Client, RESTGetAPIApplicationCommandsResult, Routes } from "discord.js";
 
 
-export async function loadCommands(client: Client, commandDir: string): Promise<Map<string, Command>> {
+export async function loadCommands(client: Client): Promise<Map<string, Command>> {
    
     const currentAppCommands : RESTGetAPIApplicationCommandsResult = await client.rest.get(Routes.applicationCommands(client.application?.id!)) as RESTGetAPIApplicationCommandsResult;
 
     const commandMap: Map<string, Command> = new Map();
 
-    const baseCmdDir = readdirSync(commandDir);
+    const baseCmdDir = readdirSync(client.commandDir);
 
     for (const baseCmdDirFile of baseCmdDir) {
 
-        const combinedDirs = path.join(commandDir, baseCmdDirFile)
+        const combinedDirs = path.join(client.commandDir, baseCmdDirFile)
         
         const fileInfo = statSync(combinedDirs)
 
