@@ -2,6 +2,15 @@ import { Client, ClientEvents, CommandInteraction, SlashCommandBuilder } from "d
 
 export interface Config {
     token: string,
+    database: ConfigDatabase,
+}
+
+interface ConfigDatabase {
+    host: string,
+    port: number,
+    user: string,
+    pass: string,
+    name: string,
 }
 
 export abstract class Command { //Unpopular opinion, I like using classes for commands.

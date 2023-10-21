@@ -1,1 +1,7 @@
 token: <BOT_TOKEN>
+database:
+  host: 127.0.0.1
+  user: <user>
+  pass: <pwd>
+  name: fleco
+  port: 5432
