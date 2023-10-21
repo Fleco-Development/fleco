@@ -38,10 +38,8 @@ export async function loadCommands(client: Client): Promise<Map<string, Command>
                         
                         if(currentAppCommand.name === commandDataJSON.name) {
                             await client.rest.patch(Routes.applicationCommand(client.application?.id!, currentAppCommand.id), { body: commandDataJSON });
-                        } else {
-                            await client.rest.delete(Routes.applicationCommand(client.application?.id!, currentAppCommand.id));
+                            break;
                         }
-
                     }
 
                     commandMap.set(command.commandData.name, command);
@@ -59,6 +57,12 @@ export async function loadCommands(client: Client): Promise<Map<string, Command>
 
         }
 
+    }
+
+    for(const currentAppCommand of currentAppCommands) {
+        if(!commandMap.has(currentAppCommand.name)) {
+            await client.rest.delete(Routes.applicationCommand(client.application?.id!, currentAppCommand.id))
+        }
     }
 
     return commandMap;
