@@ -6,10 +6,11 @@ export interface Config {
 
 export abstract class Command { //Unpopular opinion, I like using classes for commands.
 
-    public commandData: SlashCommandBuilder;
+    public client!: Client;
+    public commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
     public filePath: string | undefined;
 
-    constructor(appCommandData: SlashCommandBuilder) {
+    constructor(appCommandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">) {
         this.commandData = appCommandData;
     }
 

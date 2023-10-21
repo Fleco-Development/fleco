@@ -12,8 +12,10 @@ export default class InteractionCreateEvent extends Event {
         if (!interaction.isCommand()) return;
 
         const command = this.client.commands.get(interaction.commandName);
+        if (!command) return;
 
-        await command?.execute(interaction);
+        command.client = this.client;
+        await command.execute(interaction);
 
     }
 
