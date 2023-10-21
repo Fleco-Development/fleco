@@ -25,7 +25,7 @@ export default class AvatarCommand extends Command {
         const member = await interaction.guild?.members.fetch(memberFetch!.id)
 
         const avatarEmbed = new EmbedBuilder()
-            .setAuthor({ name: "Fleco", iconURL: this.client.user?.avatarURL({ extension: "webp" })! })
+            .setAuthor({ name: "Fleco", iconURL: this.client.user?.displayAvatarURL({ extension: "webp" })! })
             .setTitle(`Profile Picture of ${member?.user.username}`)
             .setDescription(`[Avatar Link](${member?.displayAvatarURL({ extension: "png" })})`)
             .setImage(member!.displayAvatarURL({ extension: "webp", size: 512 }))
