@@ -8,11 +8,14 @@ CREATE TABLE "Server" (
 -- CreateTable
 CREATE TABLE "Modlog" (
     "id" TEXT NOT NULL,
+    "caseNum" INTEGER NOT NULL,
     "serverID" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "reason" TEXT NOT NULL,
     "userID" TEXT NOT NULL,
     "modID" TEXT NOT NULL,
+    "date" TEXT NOT NULL,
+    "logMsgID" TEXT,
 
     CONSTRAINT "Modlog_pkey" PRIMARY KEY ("id")
 );
@@ -21,6 +24,7 @@ CREATE TABLE "Modlog" (
 CREATE TABLE "Config" (
     "id" TEXT NOT NULL,
     "serverID" TEXT NOT NULL,
+    "modlog_chan" TEXT,
     "modlog_warn" BOOLEAN,
     "modlog_ban" BOOLEAN,
     "modlog_mute" BOOLEAN,

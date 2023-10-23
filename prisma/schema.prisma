@@ -23,6 +23,8 @@ model Modlog {
 
   id String @id
 
+  caseNum Int
+
   server Server @relation(fields: [serverID], references: [id])
   serverID String
 
@@ -30,7 +32,11 @@ model Modlog {
   reason String
   
   userID String
-  modID String    
+  modID String
+
+  date String
+
+  logMsgID String?
 
 }
 
@@ -41,6 +47,7 @@ model Config {
   server Server @relation(fields: [serverID], references: [id])
   serverID String @unique
 
+  modlog_chan String?
   modlog_warn Boolean?
   modlog_ban Boolean?
   modlog_mute Boolean?
