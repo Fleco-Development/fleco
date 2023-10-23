@@ -1,4 +1,4 @@
-import { AuditLogEvent, Events, Guild, GuildAuditLogsEntry } from "discord.js";
+import { AuditLogEvent, EmbedBuilder, Events, Guild, GuildAuditLogsEntry } from "discord.js";
 import { Event } from "../types.js";
 import { nanoid } from "nanoid";
 import { Temporal } from "@js-temporal/polyfill";
@@ -25,7 +25,8 @@ export default class AuditLogEntryCreate extends Event {
 
         const mod = await this.client.users.fetch(entry.executorId!);
         const user = await this.client.users.fetch(entry.targetId!);
-
+        const date = Temporal.Now.instant();
+        
         switch(entry.action) {
 
             case AuditLogEvent.MemberBanAdd:
@@ -38,9 +39,39 @@ export default class AuditLogEntryCreate extends Event {
                         reason: entry.reason ?? "none",
                         userID: user.id,
                         modID: mod.id,
-                        date: Temporal.Now.instant.toString(),
+                        date: date.toString(),
                     }
                 });
+
+                if (server.config?.modlog_chan) {
+
+                    const newBanEmbed = new EmbedBuilder()
+                        .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
+                        .setTitle("Event - User Ban")
+                        .addFields(
+                            {
+                                name: "User Info:",
+                                value: `- ID: ${user.id}\n- Username: ${user.username}`,
+                                inline: true,
+                            },
+                            {
+                                name: "Mod Info:",
+                                value: `- ID: ${mod.id}\n-Username: ${mod.username}`,
+                                inline: true,
+                            },
+                            {
+                                name: "Info:",
+                                value: `-**Reason:** ${entry.reason ?? "none"}\n-**Date:** <t:${date.epochSeconds}:f>`,
+                            }
+                        )
+
+                    const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+
+                    if (!modlogChan || !modlogChan.isTextBased()) return;
+
+                    modlogChan.send({ embeds: [ newBanEmbed ] });
+
+                }
 
                 break;
             
