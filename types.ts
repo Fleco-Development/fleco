@@ -19,7 +19,7 @@ export abstract class Command { //Unpopular opinion, I like using classes for co
     public commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
     public filePath: string | undefined;
 
-    constructor(appCommandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">) {
+    protected constructor(appCommandData: SlashCommandBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">) {
         this.commandData = appCommandData;
     }
 
@@ -34,7 +34,7 @@ export abstract class Event {
     public client!: Client;
     public once: boolean;
 
-    constructor(eventName: keyof ClientEvents, once: boolean = false) {
+    protected constructor(eventName: keyof ClientEvents, once: boolean = false) {
         this.eventName = eventName;
         this.once = once;
     }

@@ -49,7 +49,6 @@ export async function loadCommands(client: Client): Promise<Map<string, Command>
                 } catch (e) {
                     console.log("Invalid command");
                     console.error(`error ${e}`);
-                    continue;
                 }
 
 

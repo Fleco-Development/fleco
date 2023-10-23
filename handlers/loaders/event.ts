@@ -37,7 +37,6 @@ export async function loadEvents(client: Client, eventDir: string): Promise<void
         } catch (e) {
             console.log("Invalid event");
             console.error(`error ${e}`);
-            continue;
         }
 
     }
