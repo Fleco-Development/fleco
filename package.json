@@ -19,10 +19,12 @@
   },
   "homepage": "https://github.com/Fleco-Development/fleco#readme",
   "dependencies": {
+    "@js-temporal/polyfill": "^0.4.4",
     "@prisma/client": "5.4.2",
     "bufferutil": "^4.0.8",
     "commander": "^11.1.0",
     "discord.js": "^14.13.0",
+    "nanoid": "^5.0.2",
     "utf-8-validate": "^6.0.3",
     "yaml": "^2.3.3",
     "zlib-sync": "^0.1.8"
