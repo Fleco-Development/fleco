@@ -45,7 +45,7 @@ export default class AuditLogEntryCreate extends Event {
 
                 if (server.config?.modlog_chan) {
 
-                    const newBanEmbed = new EmbedBuilder()
+                    const newbanEmbed = new EmbedBuilder()
                         .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
                         .setTitle("Event - User Ban")
                         .addFields(
@@ -69,7 +69,7 @@ export default class AuditLogEntryCreate extends Event {
 
                     if (!modlogChan || !modlogChan.isTextBased()) return;
 
-                    modlogChan.send({ embeds: [ newBanEmbed ] });
+                    modlogChan.send({ embeds: [ newbanEmbed ] });
 
                 }
 
@@ -88,6 +88,36 @@ export default class AuditLogEntryCreate extends Event {
                         date: Temporal.Now.instant.toString(),
                     }
                 });
+
+                if (server.config?.modlog_chan) {
+
+                    const unbanEmbed = new EmbedBuilder()
+                        .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
+                        .setTitle("Event - User Ban")
+                        .addFields(
+                            {
+                                name: "User Info:",
+                                value: `- ID: ${user.id}\n- Username: ${user.username}`,
+                                inline: true,
+                            },
+                            {
+                                name: "Mod Info:",
+                                value: `- ID: ${mod.id}\n-Username: ${mod.username}`,
+                                inline: true,
+                            },
+                            {
+                                name: "Info:",
+                                value: `-**Reason:** ${entry.reason ?? "none"}\n-**Date:** <t:${date.epochSeconds}:f>`,
+                            }
+                        )
+
+                    const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+
+                    if (!modlogChan || !modlogChan.isTextBased()) return;
+
+                    modlogChan.send({ embeds: [ unbanEmbed ] });
+
+                }
 
                 break;
 
