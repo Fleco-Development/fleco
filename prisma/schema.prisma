@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Server {
+
+  id String @id
+
+  config Config?  
+  modlogs Modlog[]
+
+}
+
+model Modlog {
+
+  id String @id
+
+  server Server @relation(fields: [serverID], references: [id])
+  serverID String
+
+  type String
+  reason String
+  
+  userID String
+  modID String    
+
+}
+
+model Config {
+
+  id String @id
+
+  server Server @relation(fields: [serverID], references: [id])
+  serverID String @unique
+
+  modlog_warn Boolean?
+  modlog_ban Boolean?
+  modlog_mute Boolean?
+
+}

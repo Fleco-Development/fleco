@@ -4,8 +4,7 @@ import { program } from "commander";
 import { parse } from "yaml";
 import path from "node:path";
 import { loadEvents } from "./handlers/loaders/event.js";
-import { MikroORM } from "@mikro-orm/core";
-import type { PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { PrismaClient } from "@prisma/client";
 
 program
     .option("-c, --config <string>", "Path to config file (e.g. /opt/config.yml)")
@@ -60,16 +59,11 @@ const client = new Client({ //We probably don't need all of these intents. But f
     ],
 });
 
-client.db = await MikroORM.init<PostgreSqlDriver>({
-    entities: [`${process.versions.bun ? "./entities" : "./dist/entites"}`],
-    entitiesTs: ["./entities"],
-    host: config.database.host,
-    port: config.database.port,
-    user: config.database.user,
-    password: config.database.pass,
-    dbName: config.database.name,
-    type: "postgresql",
+client.db = new PrismaClient({
+    datasourceUrl: `postgresql://${config.database.user}:${config.database.pass}@${config.database.host}:${config.database.port ?? 5432}/${config.database.name}?application_name=fleco`,
 });
+
+await client.db.$connect();
 
 let eventDir : string;
 
