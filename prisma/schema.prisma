@@ -23,6 +23,8 @@ model Modlog {
 
   id String @id
 
+  caseNum Int
+
   server Server @relation(fields: [serverID], references: [id])
   serverID String
 
@@ -33,6 +35,8 @@ model Modlog {
   modID String
 
   date String
+
+  logMsgID String?
 
 }
 

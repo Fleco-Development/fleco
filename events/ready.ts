@@ -11,8 +11,6 @@ export default class ReadyEvent extends Event {
 
     async execute(_: Client) {
 
-        console.log(`Logged in as ${this.client.user?.tag}`);
-
         this.client.commands = await loadCommands(this.client);
 
         this.client.guilds.cache.forEach(async guild => {
@@ -43,7 +41,9 @@ export default class ReadyEvent extends Event {
 
             }
 
-        })
+        });
+
+        console.log(`Logged in as ${this.client.user?.tag}`);
 
     }
 
