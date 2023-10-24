@@ -20,33 +20,28 @@ export default class ModlogCommand extends Command {
 								.addChannelTypes(ChannelType.GuildText),
 						),
 				)
-				.addSubcommand(command =>
-					command
-						.setName('enable')
-						.setDescription('Enable settings for modlog')
-						.addStringOption(option =>
-							option
-								.setName('setting')
-								.setDescription('Setting to enable modlog categories')
-								.addChoices(
-									{ name: 'Bans/Unbans', value: 'bans' },
-									{ name: 'Kicks/Mutes', value: 'kicks_mutes' },
-									{ name: 'Warns', value: 'warns' },
-								),
-						),
-				)
-				.addSubcommand(command =>
-					command
-						.setName('disable')
-						.setDescription('Disable settings for modlog')
-						.addStringOption(option =>
-							option
-								.setName('setting')
-								.setDescription('Setting to disable modlog categories')
-								.addChoices(
-									{ name: 'Bans/Unbans', value: 'bans' },
-									{ name: 'Kicks/Mutes', value: 'kicks_mutes' },
-									{ name: 'Warns', value: 'warns' },
+				.addSubcommandGroup(group =>
+					group
+						.setName('settings')
+						.setDescription('Modlog Settings')
+						.addSubcommand(command =>
+							command
+								.setName('edit')
+								.setDescription('Edit the modlog settings')
+								.addStringOption(option =>
+									option
+										.setName('setting')
+										.setDescription('Setting to enable modlog categories')
+										.addChoices(
+											{ name: 'Bans/Unbans', value: 'bans' },
+											{ name: 'Kicks/Mutes', value: 'kicks_mutes' },
+											{ name: 'Warns', value: 'warns' },
+										),
+								)
+								.addBooleanOption(option =>
+									option
+										.setName('value')
+										.setDescription('Sets the value for the modlog setting'),
 								),
 						),
 				)
@@ -57,10 +52,19 @@ export default class ModlogCommand extends Command {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 
-		switch (interaction.options.getSubcommand(true)) {
-		case 'create':
-			await this.create(interaction);
-			break;
+		if (interaction.options.getSubcommandGroup()) {
+
+			await interaction.reply('hi');
+
+		}
+		else {
+
+			switch (interaction.options.getSubcommand(true)) {
+			case 'create':
+				await this.create(interaction);
+				break;
+			}
+
 		}
 
 	}
@@ -95,5 +99,20 @@ export default class ModlogCommand extends Command {
 		await interaction.reply({ embeds: [ createModlogEmbed ] });
 
 	}
+
+	// async enable(interaction: ChatInputCommandInteraction) {
+
+	// 	const setting = interaction.options.getString('setting', false);
+
+	// 	if (!setting) {
+
+	// 		const modlogEnableEmbed = new EmbedBuilder()
+	// 			.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+	// 			.setTitle('');
+
+	// 	}
+
+
+	// }
 
 }
