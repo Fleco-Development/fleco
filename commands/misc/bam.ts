@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 export default class BamCommand extends Command {
@@ -18,7 +18,7 @@ export default class BamCommand extends Command {
 		);
 	}
 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 
 		const member = interaction.options.getUser('user', true);
 

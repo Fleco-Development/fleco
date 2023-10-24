@@ -12,6 +12,24 @@ More deployment features will also be added.
 
 - [Pterodactyl Installation](./PTERO_INSTALL.md)
 
+## Setup DB
+First, fill in your db credentials in whatever config file you would like to use:
+
+```yaml
+database:
+  host: 127.0.0.1
+  user: <user>
+  pass: <pwd>
+  name: fleco
+  port: 5432
+```
+
+Then, execute the command below, replacing `<config>` with the path to your config.
+
+```bash
+npm run db:setup -- --config '<config>'
+```
+
 ## How to Install
 
 ### NodeJS

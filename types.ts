@@ -1,4 +1,4 @@
-import { Client, ClientEvents, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Client, ClientEvents, SlashCommandBuilder } from 'discord.js';
 
 export interface Config {
     token: string,
@@ -16,6 +16,7 @@ interface ConfigDatabase {
 // Unpopular opinion, I like using classes for commands.
 export abstract class Command {
 
+	public id!: string;
 	public client!: Client;
 	public commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
 	public filePath: string | undefined;
@@ -24,7 +25,7 @@ export abstract class Command {
 		this.commandData = appCommandData;
 	}
 
-    abstract execute(interaction: CommandInteraction): Promise<void>;
+    abstract execute(interaction: ChatInputCommandInteraction): Promise<void>;
 
 }
 

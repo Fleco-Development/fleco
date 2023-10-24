@@ -6,7 +6,11 @@
   "type": "module",
   "scripts": {
     "start:bun": "bun run index.ts",
-    "start": "tsc && node dist/index.js"
+    "start": "tsc && node dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "db:setup": "node db_generate.js",
+    "db:migrate": "node db_generate.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +24,7 @@
   "homepage": "https://github.com/Fleco-Development/fleco#readme",
   "dependencies": {
     "@js-temporal/polyfill": "^0.4.4",
-    "@prisma/client": "5.4.2",
+    "@prisma/client": "latest",
     "commander": "^11.1.0",
     "discord.js": "^14.13.0",
     "nanoid": "^5.0.2",
@@ -32,7 +36,7 @@
     "@typescript-eslint/parser": "^6.9.0",
     "bun-types": "^1.0.6",
     "eslint": "^8.51.0",
-    "prisma": "^5.4.2",
+    "prisma": "latest",
     "typescript": "^5.2.2"
   }
 }

@@ -9,7 +9,7 @@ export default class InteractionCreateEvent extends Event {
 
 	async execute(interaction: Interaction) {
 
-		if (!interaction.isCommand()) return;
+		if (!interaction.isChatInputCommand()) return;
 
 		const command = this.client.commands?.get(interaction.commandName);
 		if (!command) return;

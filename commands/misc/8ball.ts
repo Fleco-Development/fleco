@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 const answers = [
@@ -41,9 +41,9 @@ export default class EightBallCommand extends Command {
 		);
 	}
 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 
-		const question = interaction.options.get('question', true).value;
+		const question = interaction.options.getString('question', true);
 
 		const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
 
