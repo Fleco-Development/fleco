@@ -9,12 +9,11 @@ export default class ReadyEvent extends Event {
 		super(Events.ClientReady, true);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async execute(_: Client) {
+	async execute(_client: Client) {
 
 		this.client.commands = await loadCommands(this.client);
 
-		await this.client.guilds.cache.forEach(async guild => {
+		for (const [_key, guild] of this.client.guilds.cache) {
 
 			if (!guild.available) return;
 
@@ -42,7 +41,7 @@ export default class ReadyEvent extends Event {
 
 			}
 
-		});
+		}
 
 		console.log(`Logged in as ${this.client.user?.tag}`);
 

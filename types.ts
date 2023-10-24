@@ -16,6 +16,7 @@ interface ConfigDatabase {
 // Unpopular opinion, I like using classes for commands.
 export abstract class Command {
 
+	public id!: string;
 	public client!: Client;
 	public commandData: SlashCommandBuilder | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
 	public filePath: string | undefined;

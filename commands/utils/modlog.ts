@@ -1,4 +1,4 @@
-import { ChannelType, ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { ChannelType, ChatInputCommandInteraction, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 export default class ModlogCommand extends Command {
@@ -11,6 +11,7 @@ export default class ModlogCommand extends Command {
 				.addSubcommand(command =>
 					command
 						.setName('create')
+						.setDescription('Setup modlogs for the server')
 						.addChannelOption(option =>
 							option
 								.setName('log_channel')
@@ -22,6 +23,7 @@ export default class ModlogCommand extends Command {
 				.addSubcommand(command =>
 					command
 						.setName('enable')
+						.setDescription('Enable settings for modlog')
 						.addStringOption(option =>
 							option
 								.setName('setting')
@@ -36,6 +38,7 @@ export default class ModlogCommand extends Command {
 				.addSubcommand(command =>
 					command
 						.setName('disable')
+						.setDescription('Disable settings for modlog')
 						.addStringOption(option =>
 							option
 								.setName('setting')
@@ -54,7 +57,7 @@ export default class ModlogCommand extends Command {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 
-		switch (interaction.options.getSubcommand()) {
+		switch (interaction.options.getSubcommand(true)) {
 		case 'create':
 			await this.create(interaction);
 			break;
@@ -82,7 +85,14 @@ export default class ModlogCommand extends Command {
 			},
 		});
 
-		await interaction.reply('OK');
+		const createModlogEmbed = new EmbedBuilder()
+			.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+			.setTitle('Modlog has been setup!')
+			.setDescription(`Modlogs will now be sent in <#${channel.id}>, if you would like to change the logging settings, you can use </modlog enable:${this.client.user?.id}> or </modlog disable:${this.client.user?.id}>`)
+			.setTimestamp()
+			.setColor('Green');
+
+		await interaction.reply({ embeds: [ createModlogEmbed ] });
 
 	}
 
