@@ -1,44 +1,46 @@
-import { Client } from "discord.js";
-import { Event } from "../../types.js";
-import { readdirSync } from "node:fs";
-import path from "node:path";
+import { Client } from 'discord.js';
+import { Event } from '../../types.js';
+import { readdirSync } from 'node:fs';
+import path from 'node:path';
 
 export async function loadEvents(client: Client, eventDir: string): Promise<void> {
 
-    const eventMap: Map<string, Event> = new Map();
+	const eventMap: Map<string, Event> = new Map();
 
-    const baseEvtDir = readdirSync(eventDir);
+	const baseEvtDir = readdirSync(eventDir);
 
-    for(const evtFile of baseEvtDir) {
+	for (const evtFile of baseEvtDir) {
 
-        const combinedEvtDir = path.join(eventDir, evtFile);
+		const combinedEvtDir = path.join(eventDir, evtFile);
 
-        try {
+		try {
 
-            const eventClass = await import(combinedEvtDir);
+			const eventClass = await import(combinedEvtDir);
 
-            const event : Event = new eventClass.default();
-            event.filePath = combinedEvtDir;
+			const event : Event = new eventClass.default();
+			event.filePath = combinedEvtDir;
 
-            eventMap.set(event.eventName, event);
+			eventMap.set(event.eventName, event);
 
-            if (event.once) {
-                client.once(event.eventName, (...e) => {
-                    event.client = client;
-                    event.execute(...e);
-                });
-            } else {
-                client.on(event.eventName, (...e) => {
-                    event.client = client;
-                    event.execute(...e);
-                });
-            }
+			if (event.once) {
+				client.once(event.eventName, (...e) => {
+					event.client = client;
+					event.execute(...e);
+				});
+			}
+			else {
+				client.on(event.eventName, (...e) => {
+					event.client = client;
+					event.execute(...e);
+				});
+			}
 
-        } catch (e) {
-            console.log("Invalid event");
-            console.error(`error ${e}`);
-        }
+		}
+		catch (e) {
+			console.log('Invalid event');
+			console.error(`error ${e}`);
+		}
 
-    }
+	}
 
 }

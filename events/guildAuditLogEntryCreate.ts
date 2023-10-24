@@ -1,252 +1,252 @@
-import { AuditLogEvent, EmbedBuilder, Events, Guild, GuildAuditLogsEntry, Message } from "discord.js";
-import { Event } from "../types.js";
-import { nanoid } from "nanoid";
-import { Temporal } from "@js-temporal/polyfill";
+import { AuditLogEvent, EmbedBuilder, Events, Guild, GuildAuditLogsEntry, Message } from 'discord.js';
+import { Event } from '../types.js';
+import { nanoid } from 'nanoid';
+import { Temporal } from '@js-temporal/polyfill';
 
 export default class AuditLogEntryCreate extends Event {
 
-    constructor() {
-        super(Events.GuildAuditLogEntryCreate)
-    }
+	constructor() {
+		super(Events.GuildAuditLogEntryCreate);
+	}
 
-    async execute(entry: GuildAuditLogsEntry, guild: Guild) {
+	async execute(entry: GuildAuditLogsEntry, guild: Guild) {
 
-        const server = await this.client.db.server.findFirst({
-            where: {
-                id: guild.id
-            },
-            include: {
-                config: true,
-                modlogs: true
-            }
-        });
+		const server = await this.client.db.server.findFirst({
+			where: {
+				id: guild.id,
+			},
+			include: {
+				config: true,
+				modlogs: true,
+			},
+		});
 
-        if (!server) return;
+		if (!server) return;
 
-        const mod = await this.client.users.fetch(entry.executorId!);
-        const user = await this.client.users.fetch(entry.targetId!);
-        const date = Temporal.Now.instant();
+		const mod = await this.client.users.fetch(entry.executorId!);
+		const user = await this.client.users.fetch(entry.targetId!);
+		const date = Temporal.Now.instant();
 
-        let msg: Message | null = null;
-        
-        switch(entry.action) {
+		let msg: Message | null = null;
 
-            case AuditLogEvent.MemberBanAdd:
+		switch (entry.action) {
 
-                if (server.config?.modlog_chan) {
+		case AuditLogEvent.MemberBanAdd:
 
-                    const newbanEmbed = new EmbedBuilder()
-                        .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
-                        .setTitle("Event - User Ban")
-                        .addFields(
-                            {
-                                name: "User Info:",
-                                value: `- **ID**: ${user.id}\n- **Username:** ${user.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Mod Info:",
-                                value: `- **ID:** ${mod.id}\n- Username: ${mod.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Info:",
-                                value: `- **Reason:** ${entry.reason ?? "none"}\n- **Date:** <t:${date.epochSeconds}:f>`,
-                            }
-                        )
-                        .setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
-                        .setColor("Red")
+			if (server.config?.modlog_chan) {
 
-                    const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+				const newbanEmbed = new EmbedBuilder()
+					.setAuthor({ name: 'Fleco Modlog', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+					.setTitle('Event - User Ban')
+					.addFields(
+						{
+							name: 'User Info:',
+							value: `- **ID**: ${user.id}\n- **Username:** ${user.username}`,
+							inline: true,
+						},
+						{
+							name: 'Mod Info:',
+							value: `- **ID:** ${mod.id}\n- Username: ${mod.username}`,
+							inline: true,
+						},
+						{
+							name: 'Info:',
+							value: `- **Reason:** ${entry.reason ?? 'none'}\n- **Date:** <t:${date.epochSeconds}:f>`,
+						},
+					)
+					.setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
+					.setColor('Red');
 
-                    if (!modlogChan || !modlogChan.isTextBased()) return;
+				const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
 
-                    msg = await modlogChan.send({ embeds: [ newbanEmbed ] });
+				if (!modlogChan || !modlogChan.isTextBased()) return;
 
-                }
+				msg = await modlogChan.send({ embeds: [ newbanEmbed ] });
 
-                await this.client.db.modlog.create({
-                    data: {
-                        id: nanoid(),
-                        serverID: guild.id,
-                        type: "ban",
-                        reason: entry.reason ?? "none",
-                        userID: user.id,
-                        modID: mod.id,
-                        date: date.toString(),
-                        caseNum: server.modlogs.length + 1,
-                        logMsgID: msg?.id
-                    }
-                });
+			}
 
-                break;
-            
-            case AuditLogEvent.MemberBanRemove:
+			await this.client.db.modlog.create({
+				data: {
+					id: nanoid(),
+					serverID: guild.id,
+					type: 'ban',
+					reason: entry.reason ?? 'none',
+					userID: user.id,
+					modID: mod.id,
+					date: date.toString(),
+					caseNum: server.modlogs.length + 1,
+					logMsgID: msg?.id,
+				},
+			});
 
-                if (server.config?.modlog_chan) {
+			break;
 
-                    const unbanEmbed = new EmbedBuilder()
-                        .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
-                        .setTitle("Event - User Unban")
-                        .addFields(
-                            {
-                                name: "User Info:",
-                                value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Mod Info:",
-                                value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Info:",
-                                value: `- **Reason:** ${entry.reason ?? "none"}\n- **Date:** <t:${date.epochSeconds}:f>`,
-                            }
-                        )
-                        .setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
-                        .setColor("Green")
+		case AuditLogEvent.MemberBanRemove:
 
-                    const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+			if (server.config?.modlog_chan) {
 
-                    if (!modlogChan || !modlogChan.isTextBased()) return;
+				const unbanEmbed = new EmbedBuilder()
+					.setAuthor({ name: 'Fleco Modlog', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+					.setTitle('Event - User Unban')
+					.addFields(
+						{
+							name: 'User Info:',
+							value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
+							inline: true,
+						},
+						{
+							name: 'Mod Info:',
+							value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
+							inline: true,
+						},
+						{
+							name: 'Info:',
+							value: `- **Reason:** ${entry.reason ?? 'none'}\n- **Date:** <t:${date.epochSeconds}:f>`,
+						},
+					)
+					.setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
+					.setColor('Green');
 
-                    msg = await modlogChan.send({ embeds: [ unbanEmbed ] });
+				const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
 
-                }
+				if (!modlogChan || !modlogChan.isTextBased()) return;
 
-                await this.client.db.modlog.create({
-                    data: {
-                        id: nanoid(),
-                        serverID: guild.id,
-                        type: "unban",
-                        reason: entry.reason ?? "none",
-                        userID: user.id,
-                        modID: mod.id,
-                        date: date.toString(),
-                        caseNum: server.modlogs.length + 1,
-                        logMsgID: msg?.id
-                    }
-                });
+				msg = await modlogChan.send({ embeds: [ unbanEmbed ] });
 
-                break;
+			}
 
-            case AuditLogEvent.MemberKick:
+			await this.client.db.modlog.create({
+				data: {
+					id: nanoid(),
+					serverID: guild.id,
+					type: 'unban',
+					reason: entry.reason ?? 'none',
+					userID: user.id,
+					modID: mod.id,
+					date: date.toString(),
+					caseNum: server.modlogs.length + 1,
+					logMsgID: msg?.id,
+				},
+			});
 
-                if (server.config?.modlog_chan) {
+			break;
 
-                    const kickEmbed = new EmbedBuilder()
-                        .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
-                        .setTitle("Event - User Kick")
-                        .addFields(
-                            {
-                                name: "User Info:",
-                                value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Mod Info:",
-                                value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
-                                inline: true,
-                            },
-                            {
-                                name: "Info:",
-                                value: `- **Reason:** ${entry.reason ?? "none"}\n- **Date:** <t:${date.epochSeconds}:f>`,
-                            }
-                        )
-                        .setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
-                        .setColor("Gold")
+		case AuditLogEvent.MemberKick:
 
-                    const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+			if (server.config?.modlog_chan) {
 
-                    if (!modlogChan || !modlogChan.isTextBased()) return;
+				const kickEmbed = new EmbedBuilder()
+					.setAuthor({ name: 'Fleco Modlog', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+					.setTitle('Event - User Kick')
+					.addFields(
+						{
+							name: 'User Info:',
+							value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
+							inline: true,
+						},
+						{
+							name: 'Mod Info:',
+							value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
+							inline: true,
+						},
+						{
+							name: 'Info:',
+							value: `- **Reason:** ${entry.reason ?? 'none'}\n- **Date:** <t:${date.epochSeconds}:f>`,
+						},
+					)
+					.setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
+					.setColor('Gold');
 
-                    msg = await modlogChan.send({ embeds: [ kickEmbed ] });
+				const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
 
-                }
+				if (!modlogChan || !modlogChan.isTextBased()) return;
 
-                await this.client.db.modlog.create({
-                    data: {
-                        id: nanoid(),
-                        serverID: guild.id,
-                        type: "kick",
-                        reason: entry.reason ?? "none",
-                        userID: user.id,
-                        modID: mod.id,
-                        date: date.toString(),
-                        caseNum: server.modlogs.length + 1,
-                        logMsgID: msg?.id
-                    }
-                });
+				msg = await modlogChan.send({ embeds: [ kickEmbed ] });
 
-                break;
-            
-            case AuditLogEvent.MemberUpdate:
+			}
 
-                for(const change of entry.changes) {
+			await this.client.db.modlog.create({
+				data: {
+					id: nanoid(),
+					serverID: guild.id,
+					type: 'kick',
+					reason: entry.reason ?? 'none',
+					userID: user.id,
+					modID: mod.id,
+					date: date.toString(),
+					caseNum: server.modlogs.length + 1,
+					logMsgID: msg?.id,
+				},
+			});
 
-                    if (change.key == "communication_disabled_until") {
+			break;
 
-                        if (!change.new) return;
+		case AuditLogEvent.MemberUpdate:
 
-                        if (server.config?.modlog_chan) {
+			for (const change of entry.changes) {
 
-                            const endDate = Temporal.Instant.from(change.new as string);
+				if (change.key == 'communication_disabled_until') {
 
-                            const muteEmbed = new EmbedBuilder()
-                                .setAuthor({ name: "Fleco Modlog", iconURL: this.client.user?.displayAvatarURL({ extension: "webp"}) }) 
-                                .setTitle("Event - User Mute")
-                                .addFields(
-                                    {
-                                        name: "User Info:",
-                                        value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
-                                        inline: true,
-                                    },
-                                    {
-                                        name: "Mod Info:",
-                                        value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
-                                        inline: true,
-                                    },
-                                    {
-                                        name: "Info:",
-                                        value: `- **Reason:** ${entry.reason ?? "none"}\n- **Muted Until:** <t:${endDate.epochSeconds}:F> **][** <t:${endDate.epochSeconds}:R>\n- **Date:** <t:${date.epochSeconds}:f>`,
-                                    }
-                                )
-                                .setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
-                                .setColor("Gold")
+					if (!change.new) return;
 
-                            const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
+					if (server.config?.modlog_chan) {
 
-                            if (!modlogChan || !modlogChan.isTextBased()) return;
+						const endDate = Temporal.Instant.from(change.new as string);
 
-                            msg = await modlogChan.send({ embeds: [ muteEmbed ] });
+						const muteEmbed = new EmbedBuilder()
+							.setAuthor({ name: 'Fleco Modlog', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+							.setTitle('Event - User Mute')
+							.addFields(
+								{
+									name: 'User Info:',
+									value: `- **ID:** ${user.id}\n- **Username:** ${user.username}`,
+									inline: true,
+								},
+								{
+									name: 'Mod Info:',
+									value: `- **ID:** ${mod.id}\n- **Username:** ${mod.username}`,
+									inline: true,
+								},
+								{
+									name: 'Info:',
+									value: `- **Reason:** ${entry.reason ?? 'none'}\n- **Muted Until:** <t:${endDate.epochSeconds}:F> **][** <t:${endDate.epochSeconds}:R>\n- **Date:** <t:${date.epochSeconds}:f>`,
+								},
+							)
+							.setFooter({ text: `Case Number: ${server.modlogs.length + 1}` })
+							.setColor('Gold');
 
-                        }
+						const modlogChan = await guild.channels.fetch(server.config.modlog_chan);
 
-                        await this.client.db.modlog.create({
-                            data: {
-                                id: nanoid(),
-                                serverID: guild.id,
-                                type: "ban",
-                                reason: entry.reason ?? "none",
-                                userID: user.id,
-                                modID: mod.id,
-                                date: date.toString(),
-                                caseNum: server.modlogs.length + 1,
-                                logMsgID: msg?.id
-                            }
-                        });
+						if (!modlogChan || !modlogChan.isTextBased()) return;
 
-                        break;
+						msg = await modlogChan.send({ embeds: [ muteEmbed ] });
 
-                    }
+					}
 
-                }    
+					await this.client.db.modlog.create({
+						data: {
+							id: nanoid(),
+							serverID: guild.id,
+							type: 'ban',
+							reason: entry.reason ?? 'none',
+							userID: user.id,
+							modID: mod.id,
+							date: date.toString(),
+							caseNum: server.modlogs.length + 1,
+							logMsgID: msg?.id,
+						},
+					});
 
-                break;
-            
-        }
+					break;
 
-    }
+				}
+
+			}
+
+			break;
+
+		}
+
+	}
 
 }
