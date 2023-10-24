@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, ClientEvents, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Client, ClientEvents, SlashCommandBuilder } from 'discord.js';
 
 export interface Config {
     token: string,
