@@ -77,7 +77,12 @@ export default class ModlogCommand extends Command {
 					},
 				},
 			},
+			include: {
+				config: true,
+			},
 		});
+
+		await interaction.reply('OK');
 
 	}
 
