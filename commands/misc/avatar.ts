@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 export default class AvatarCommand extends Command {
@@ -18,7 +18,7 @@ export default class AvatarCommand extends Command {
 		);
 	}
 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 
 		const memberFetch = interaction.options.getUser('user', false) || interaction.member?.user;
 

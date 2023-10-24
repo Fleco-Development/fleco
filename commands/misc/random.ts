@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 export default class RandomCommand extends Command {
@@ -24,10 +24,10 @@ export default class RandomCommand extends Command {
 		);
 	}
 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: ChatInputCommandInteraction) {
 
-		const min = interaction.options.get('min', true).value as number;
-		const max = interaction.options.get('max', true).value as number;
+		const min = interaction.options.getInteger('min', true);
+		const max = interaction.options.getInteger('max', true);
 
 		const randomEmbed = new EmbedBuilder()
 			.setAuthor({ name: 'Fleco', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })

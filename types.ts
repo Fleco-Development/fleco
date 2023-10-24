@@ -1,4 +1,4 @@
-import { Client, ClientEvents, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Client, ClientEvents, CommandInteraction, SlashCommandBuilder } from 'discord.js';
 
 export interface Config {
     token: string,
@@ -24,7 +24,7 @@ export abstract class Command {
 		this.commandData = appCommandData;
 	}
 
-    abstract execute(interaction: CommandInteraction): Promise<void>;
+    abstract execute(interaction: ChatInputCommandInteraction): Promise<void>;
 
 }
 
