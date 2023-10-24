@@ -1,5 +1,23 @@
-import { ChannelType, ChatInputCommandInteraction, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, MessageComponentInteraction, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
+import { Prisma } from '@prisma/client';
+
+type ConfigFields = keyof Omit<Prisma.ConfigFieldRefs, 'id' | 'server' | 'serverID' | 'modlog_chan'>;
+
+const categoryInfo = {
+	bans: {
+		title: 'Ban/Unban Logs',
+		desc: 'Logs any time a user is banned/unbanned on the server, if the person is banned with the bot and a duration has been set, it will also display the date of when they will be unbanned.',
+	},
+	kicks_mutes: {
+		title: 'Kick/Mute Logs',
+		desc: 'Logs any time someone is kicked from the server or has been put in a timeout. This uses the built-in Timeout feature in Discord.  **It cannot log when a user has been unmuted automatically due to how the Discord API works.**',
+	},
+	warns: {
+		title: 'Warning Logs',
+		desc: 'Logs any time the warn command is used to warn another user.',
+	},
+};
 
 export default class ModlogCommand extends Command {
 
@@ -22,7 +40,7 @@ export default class ModlogCommand extends Command {
 				)
 				.addSubcommandGroup(group =>
 					group
-						.setName('settings')
+						.setName('logging')
 						.setDescription('Modlog Settings')
 						.addSubcommand(command =>
 							command
@@ -100,19 +118,90 @@ export default class ModlogCommand extends Command {
 
 	}
 
-	async settings(interaction: ChatInputCommandInteraction) {
+	async logging(interaction: ChatInputCommandInteraction) {
 
 		switch (interaction.options.getSubcommand(true)) {
 		case 'edit':
-			await this.settingsEdit(interaction);
+			await this.loggingEdit(interaction);
 			break;
 		}
 
 	}
 
-	async settingsEdit(interaction: ChatInputCommandInteraction) {
+	async loggingEdit(interaction: ChatInputCommandInteraction) {
 
-		await interaction.reply('To-Do');
+		const setting = interaction.options.getString('setting', false);
+		const value = interaction.options.getBoolean('value', false);
+
+		const server = await this.client.db.server.findUnique({
+			where: {
+				id: interaction.guild?.id,
+			},
+			include: {
+				config: true,
+			},
+		});
+
+		if (!server || !server.config) {
+			await interaction.reply('to-do');
+			return;
+		}
+
+		let currentSetting: boolean | null = null;
+
+		if (setting) {
+
+			currentSetting = server.config[setting as ConfigFields];
+
+		}
+
+		const exitButton = new ButtonBuilder()
+			.setCustomId('edit_exit')
+			.setLabel('Exit')
+			.setStyle(ButtonStyle.Danger);
+
+		const collectorFilter = (i: MessageComponentInteraction) => {
+			i.deferUpdate();
+			return i.user.id === interaction.user.id;
+		};
+
+		if (!setting && !value) {
+			await interaction.reply('yo');
+		}
+		else if (setting && !value) {
+
+			const toggleButton = new ButtonBuilder()
+				.setCustomId('edit_toggle')
+				.setLabel('Toggle Setting')
+				.setStyle(currentSetting ? ButtonStyle.Success : ButtonStyle.Secondary);
+
+			const actionRow = new ActionRowBuilder<ButtonBuilder>()
+				.addComponents(toggleButton, exitButton);
+
+			const embedInfo = categoryInfo[setting as keyof typeof categoryInfo];
+
+			const changeSettingValue = new EmbedBuilder()
+				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setTitle(embedInfo.title)
+				.setDescription(`${embedInfo.desc}\n\n**Current Status** ${currentSetting ? 'Enabled' : 'Disabled'}`)
+				.setColor(currentSetting ? 'Green' : 'Red');
+
+			const msg = await interaction.reply({
+				embeds: [ changeSettingValue ],
+				components: [ actionRow ],
+				ephemeral: true,
+			});
+
+
+			const userInteraction = await msg.awaitMessageComponent({ filter: collectorFilter, componentType: ComponentType.Button, time: 60_000 });
+
+			await userInteraction.reply('hi');
+
+		}
+		else if (!setting && value) {
+			await interaction.reply('heh');
+		}
+
 
 	}
 
