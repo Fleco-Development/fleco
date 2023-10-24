@@ -19,7 +19,7 @@ DatabaseMigration(datasourceUrl);
 
 function DatabaseMigration(dbUrl) {
 
-	const migrationProcess = exec('npx prisma db push --skip-generate', {
+	const migrationProcess = exec('npx prisma db push', {
 		env: {
 			...process.env,
 			DATABASE_URL: dbUrl,
