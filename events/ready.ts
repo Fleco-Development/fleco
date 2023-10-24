@@ -14,7 +14,7 @@ export default class ReadyEvent extends Event {
 
 		this.client.commands = await loadCommands(this.client);
 
-		this.client.guilds.cache.forEach(async guild => {
+		await this.client.guilds.cache.forEach(async guild => {
 
 			if (!guild.available) return;
 

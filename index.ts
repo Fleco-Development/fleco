@@ -96,4 +96,4 @@ else {
 
 await loadEvents(client, eventDir);
 
-client.login(config.token);
+await client.login(config.token);

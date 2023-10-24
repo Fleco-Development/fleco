@@ -1,6 +1,11 @@
 version: "1.0"
 linter: jetbrains/qodana-js:2023.2
 bootstrap: npm i
+licenseRules:
+  - keys:
+      - "CC0-1.0"
+    allowed:
+      - "0BSD"
 include:
   - name: CheckDependencyLicenses
   - name: Eslint
