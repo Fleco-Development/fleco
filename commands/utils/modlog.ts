@@ -100,6 +100,22 @@ export default class ModlogCommand extends Command {
 
 	}
 
+	async settings(interaction: ChatInputCommandInteraction) {
+
+		switch (interaction.options.getSubcommand(true)) {
+		case 'edit':
+			await this.settingsEdit(interaction);
+			break;
+		}
+
+	}
+
+	async settingsEdit(interaction: ChatInputCommandInteraction) {
+
+		await interaction.reply('To-Do');
+
+	}
+
 	// async enable(interaction: ChatInputCommandInteraction) {
 
 	// 	const setting = interaction.options.getString('setting', false);
