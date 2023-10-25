@@ -187,7 +187,7 @@ export default class ModlogCommand extends Command {
 		if (!setting && value === null) {
 
 			const toggleCatEmbed = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setTitle('Edit Logging Settings')
 				.setDescription('Please use the buttons below to toggle any of the logging categories.')
 				.setColor('Blue');
@@ -207,7 +207,7 @@ export default class ModlogCommand extends Command {
 			currentSetting = server.config[userInteraction.customId as ConfigFields];
 
 			const toggleEmbed = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setDescription(`${embedInfo.title} are now **${!currentSetting ? 'Enabled' : 'Disabled'}**`)
 				.setColor(!currentSetting ? 'Green' : 'Red');
 
@@ -244,7 +244,7 @@ export default class ModlogCommand extends Command {
 			const embedInfo = categoryInfo[setting as keyof typeof categoryInfo];
 
 			const changeSettingValue = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setTitle(embedInfo.title)
 				.setDescription(`${embedInfo.desc}\n\n**Current Status:** ${currentSetting ? 'Enabled' : 'Disabled'}`)
 				.setColor(currentSetting ? 'Green' : 'Red');
@@ -258,7 +258,7 @@ export default class ModlogCommand extends Command {
 			const userInteraction = await msg.awaitMessageComponent({ filter: collectorFilter, componentType: ComponentType.Button, time: 60_000 });
 
 			const toggleEmbed = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setDescription(`${embedInfo.title} are now **${!currentSetting ? 'Enabled' : 'Disabled'}**`)
 				.setColor(!currentSetting ? 'Green' : 'Red');
 
@@ -285,7 +285,7 @@ export default class ModlogCommand extends Command {
 		else if (!setting && value !== null) {
 
 			const toggleCatEmbed = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setTitle('Edit Logging Settings')
 				.setDescription('Please use the buttons below to toggle any of the logging categories.')
 				.setColor('Blue');
@@ -304,7 +304,7 @@ export default class ModlogCommand extends Command {
 			const embedInfo = categoryInfo[userInteraction.customId as keyof typeof categoryInfo];
 
 			const toggleEmbed = new EmbedBuilder()
-				.setAuthor({ name: 'Fleco Setting', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+				.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 				.setDescription(`${embedInfo.title} are now **${value ? 'Enabled' : 'Disabled'}**`)
 				.setColor(value ? 'Green' : 'Red');
 
