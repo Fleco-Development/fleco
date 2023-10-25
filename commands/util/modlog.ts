@@ -9,13 +9,13 @@ const categoryInfo = {
 		title: 'Ban/Unban Logs',
 		desc: 'Logs any time a user is banned/unbanned on the server, if the person is banned with the bot and a duration has been set, it will also display the date of when they will be unbanned.',
 	},
-	modlog_kick_mute: {
-		title: 'Kick/Mute Logs',
-		desc: 'Logs any time someone is kicked from the server or has been put in a timeout. This uses the built-in Timeout feature in Discord.  **It cannot log when a user has been unmuted automatically due to how the Discord API works.**',
+	modlog_kick: {
+		title: 'Kick Logs',
+		desc: 'Logs any time someone is kicked from the server ',
 	},
-	modlog_warn: {
-		title: 'Warning Logs',
-		desc: 'Logs any time the warn command is used to warn another user.',
+	modlog_warn_mute: {
+		title: 'Warn/Mute Logs',
+		desc: 'Logs any time the warn command is used to warn another user or logs when a user is put in a timeout. This uses the built-in Timeout feature in Discord.  **It cannot log when a user has been unmuted automatically due to how the Discord API works.**',
 	},
 };
 
@@ -52,8 +52,8 @@ export default class ModlogCommand extends Command {
 										.setDescription('Setting to enable modlog categories')
 										.addChoices(
 											{ name: 'Bans/Unbans', value: 'modlog_ban' },
-											{ name: 'Kicks/Mutes', value: 'modlog_kick_mute' },
-											{ name: 'Warns', value: 'modlog_warn' },
+											{ name: 'Kicks', value: 'modlog_kick' },
+											{ name: 'Warns/Mutes', value: 'modlog_warn_mute' },
 										),
 								)
 								.addBooleanOption(option =>
@@ -217,19 +217,18 @@ export default class ModlogCommand extends Command {
 
 		const banCatButton = new ButtonBuilder()
 			.setCustomId('modlog_ban')
-			.setLabel('Ban/Unban Logs');
+			.setLabel('Ban/Unban Logs')
+			.setStyle(server.config['modlog_ban'] ? ButtonStyle.Success : ButtonStyle.Secondary);
 
 		const kickMuteCatButton = new ButtonBuilder()
 			.setCustomId('modlog_kick_mute')
-			.setLabel('Kick/Mute Logs');
+			.setLabel('Kick Logs')
+			.setStyle(server.config['modlog_kick'] ? ButtonStyle.Success : ButtonStyle.Secondary);
 
 		const warnCatButton = new ButtonBuilder()
 			.setCustomId('modlog_warn')
-			.setLabel('Warning Logs');
-
-		banCatButton.setStyle(server.config['modlog_ban'] ? ButtonStyle.Success : ButtonStyle.Secondary);
-		kickMuteCatButton.setStyle(server.config['modlog_kick_mute'] ? ButtonStyle.Success : ButtonStyle.Secondary);
-		warnCatButton.setStyle(server.config['modlog_warn'] ? ButtonStyle.Success : ButtonStyle.Secondary);
+			.setLabel('Warn/Mute Logs')
+			.setStyle(server.config['modlog_warn_mute'] ? ButtonStyle.Success : ButtonStyle.Secondary);
 
 		const collectorFilter = (i: MessageComponentInteraction) => {
 			return i.user.id === interaction.user.id;
