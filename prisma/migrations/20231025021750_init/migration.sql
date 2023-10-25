@@ -25,9 +25,9 @@ CREATE TABLE "Config" (
     "id" TEXT NOT NULL,
     "serverID" TEXT NOT NULL,
     "modlog_chan" TEXT,
-    "modlog_warn" BOOLEAN,
+    "modlog_warn_mute" BOOLEAN,
     "modlog_ban" BOOLEAN,
-    "modlog_mute" BOOLEAN,
+    "modlog_kick" BOOLEAN,
 
     CONSTRAINT "Config_pkey" PRIMARY KEY ("id")
 );
