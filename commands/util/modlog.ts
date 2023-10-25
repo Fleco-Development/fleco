@@ -74,7 +74,7 @@ export default class ModlogCommand extends Command {
 
 			switch (interaction.options.getSubcommandGroup(true)) {
 			case 'logging':
-				this.logging(interaction);
+				await this.logging(interaction);
 				break;
 			}
 
