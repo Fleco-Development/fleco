@@ -1,4 +1,4 @@
-import { Client, Events } from 'discord.js';
+import { ActivityType, Client, Events } from 'discord.js';
 import { Event } from '../types.js';
 import { loadCommands } from '../handlers/loaders/command.js';
 import { nanoid } from 'nanoid';
@@ -10,6 +10,14 @@ export default class ReadyEvent extends Event {
 	}
 
 	async execute(_client: Client) {
+
+		this.client.user?.setActivity({
+			type: ActivityType.Custom,
+			state: 'Creating bugs...',
+			name: 'fleco',
+		});
+
+		this.client.user?.setStatus('dnd');
 
 		this.client.commands = await loadCommands(this.client);
 
