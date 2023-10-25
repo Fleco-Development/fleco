@@ -1,7 +1,8 @@
-import { APIEmbedField, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, MessageComponentInteraction, PermissionFlagsBits, RestOrArray, SlashCommandBuilder } from 'discord.js';
+import { APIEmbedField, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, MessageComponentInteraction, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 import { Prisma } from '@prisma/client';
 import { Temporal } from '@js-temporal/polyfill';
+import { paginateArray } from '../../utils/paginate.js';
 
 type ConfigFields = keyof Omit<Prisma.ConfigFieldRefs, 'id' | 'server' | 'serverID' | 'modlog_chan'>;
 
@@ -208,36 +209,104 @@ export default class ModlogCommand extends Command {
 			},
 		});
 
-		const fields: RestOrArray<APIEmbedField> = [];
+		testEmbed.setFooter({ text: `Total Logs: ${userModlogs.length}` });
 
 		if (userModlogs.length == 0) {
 
 			testEmbed.setDescription('User has no logs!');
 
+			await interaction.reply({ embeds: [ testEmbed ] });
+			return;
+
 		}
-		else {
+
+		const paginatedLogs = paginateArray(userModlogs, 6);
+
+		// const collectorFilter = (i: MessageComponentInteraction) => {
+		// 	return i.user.id === interaction.user.id;
+		// };
+
+		// const firstPageButton = new ButtonBuilder()
+		// 	.setCustomId('first_page')
+		// 	.setEmoji('⏪')
+		// 	.setLabel('First Page');
+
+		const lastPageButton = new ButtonBuilder()
+			.setCustomId('last_page')
+			.setEmoji('⏩')
+			.setLabel('Last Page')
+			.setStyle(ButtonStyle.Secondary);
+
+		const nextPageButton = new ButtonBuilder()
+			.setCustomId('next_page')
+			.setEmoji('▶️')
+			.setLabel('Next')
+			.setStyle(ButtonStyle.Secondary);
+
+		// const backPageButton = new ButtonBuilder()
+		// 	.setCustomId('back_page')
+		// 	.setEmoji('◀️')
+		// 	.setLabel('Back')
+		// 	.setStyle(ButtonStyle.Secondary);
+
+		if (paginatedLogs.totalPages == 1) {
+
+			const mainRow = new ActionRowBuilder<ButtonBuilder>()
+				.addComponents(nextPageButton, lastPageButton);
+
+			testEmbed.addFields(this.generateFields(paginatedLogs.pages[0]));
+
+			await interaction.reply({ embeds: [ testEmbed ], components: [ mainRow ] });
+			return;
+
+		}
 
 
-			for (const modlog of userModlogs) {
+		testEmbed.addFields(this.generateFields(userModlogs));
 
-				const date = Temporal.Instant.from(modlog.date).epochSeconds;
+		await interaction.reply({ embeds: [ testEmbed ] });
 
+	}
 
-				fields.push({
-					name: `Case #${modlog.caseNum} | ${modlog.type}`,
-					value: `- **Reason:** ${modlog.reason}\n- **Date:**	<t:${date}:d>\n- **Time:** <t:${date}:t>\n- **Mod:** *To-Do*`,
-					inline: true,
-				});
+	generateFields(logs: Prisma.ModlogGetPayload<Prisma.ModlogDefaultArgs>[] | undefined): APIEmbedField[] {
+
+		const fields: APIEmbedField[] = [];
+
+		const fieldLayout = `- **Reason:** {{modlog_reason}}
+- **Mod:** {{mod}}
+- **Date:** {{date}}
+- **Time:** {{time}}
+{{end_time}}`;
+
+		if (!logs) return fields;
+
+		for (const modlog of logs) {
+
+			const date = Temporal.Instant.from(modlog.date).epochSeconds;
+
+			let fieldValueString = fieldLayout
+				.replace('{{modlog_reason}}', modlog.reason)
+				.replace('{{mod}}', modlog.modID)
+				.replace('{{date}}', `<t:${date}:d>`)
+				.replace('{{time}}', `<t:${date}:t>`);
+
+			if (modlog.type == 'mute') {
+
+				fieldValueString = fieldValueString.replace('{{end_time}}', `- **Mute End:**\n - **Date:** <t:${date}:d>\n - **Time:** <t:${date}:t>`);
 
 			}
 
+			fieldValueString = fieldValueString.replace('{{end_time}}', '');
+
+			fields.push({
+				name: `Case #${modlog.caseNum} | ${modlog.type}`,
+				value: fieldValueString,
+				inline: true,
+			});
+
 		}
 
-		testEmbed.setFooter({ text: `Total Logs: ${userModlogs.length}` });
-		testEmbed.addFields(fields);
-
-
-		await interaction.reply({ embeds: [ testEmbed ] });
+		return fields;
 
 	}
 

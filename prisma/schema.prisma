@@ -31,7 +31,8 @@ model Modlog {
   userID String
   modID  String
 
-  date String
+  date    String
+  endDate String?
 
   logMsgID String?
 }
