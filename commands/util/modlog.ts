@@ -1,6 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, MessageComponentInteraction, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { APIEmbedField, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, MessageComponentInteraction, PermissionFlagsBits, RestOrArray, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 import { Prisma } from '@prisma/client';
+import { Temporal } from '@js-temporal/polyfill';
 
 type ConfigFields = keyof Omit<Prisma.ConfigFieldRefs, 'id' | 'server' | 'serverID' | 'modlog_chan'>;
 
@@ -69,6 +70,22 @@ export default class ModlogCommand extends Command {
 						),
 
 				)
+				.addSubcommandGroup(group =>
+					group
+						.setName('user')
+						.setDescription('Show/Delete user modlogs')
+						.addSubcommand(command =>
+							command
+								.setName('get')
+								.setDescription('Get the modlogs for a certain member.')
+								.addUserOption(option =>
+									option
+										.setName('user')
+										.setDescription('Guild member')
+										.setRequired(true),
+								),
+						),
+				)
 				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 				.setDMPermission(false),
 		);
@@ -81,6 +98,9 @@ export default class ModlogCommand extends Command {
 			switch (interaction.options.getSubcommandGroup(true)) {
 			case 'logging':
 				await this.logging(interaction);
+				break;
+			case 'user':
+				await this.user(interaction);
 				break;
 			}
 
@@ -125,6 +145,99 @@ export default class ModlogCommand extends Command {
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [ createModlogEmbed ] });
+
+	}
+
+	async user(interaction: ChatInputCommandInteraction) {
+
+		switch (interaction.options.getSubcommand(true)) {
+		case 'get':
+			await this.userGet(interaction);
+			break;
+		}
+
+	}
+
+	async userGet(interaction: ChatInputCommandInteraction) {
+
+		const testEmbed = new EmbedBuilder()
+			.setAuthor({ name: 'Fleco Modlogs', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+			// .addFields(
+			// 	{
+			// 		name: 'Case #20 | Warning :',
+			// 		value: '- **Reason:** Pogging in general chat\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// 	{
+			// 		name: 'Case #5 | Kick :',
+			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// 	{
+			// 		name: 'Case #21 | Ban :',
+			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Ban End:**\n - **Date:** <t:1698245210:d>\n - **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// 	{
+			// 		name: 'Case #20 | Warning :',
+			// 		value: '- **Reason:** Pogging in general chat\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// 	{
+			// 		name: 'Case #5 | Kick :',
+			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// 	{
+			// 		name: 'Case #6 | Mute :',
+			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mute End:**\n - **Date:** <t:1698245210:d>\n - **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
+			// 		inline: true,
+			// 	},
+			// )
+			// .setFooter({ text: 'Total Logs: 6 | Page 1/1' })
+			.setColor('Blue');
+
+		const user = interaction.options.getUser('user', true);
+
+		testEmbed.setTitle(`Modlogs for ${user.username}`);
+
+		const userModlogs = await this.client.db.modlog.findMany({
+			where: {
+				userID: user.id,
+				serverID: interaction.guild?.id,
+			},
+		});
+
+		const fields: RestOrArray<APIEmbedField> = [];
+
+		if (userModlogs.length == 0) {
+
+			testEmbed.setDescription('User has no logs!');
+
+		}
+		else {
+
+
+			for (const modlog of userModlogs) {
+
+				const date = Temporal.Instant.from(modlog.date).epochSeconds;
+
+
+				fields.push({
+					name: `Case #${modlog.caseNum} | ${modlog.type}`,
+					value: `- **Reason:** ${modlog.reason}\n- **Date:**	<t:${date}:d>\n- **Time:** <t:${date}:t>\n- **Mod:** *To-Do*`,
+					inline: true,
+				});
+
+			}
+
+		}
+
+		testEmbed.setFooter({ text: `Total Logs: ${userModlogs.length}` });
+		testEmbed.addFields(fields);
+
+
+		await interaction.reply({ embeds: [ testEmbed ] });
 
 	}
 
