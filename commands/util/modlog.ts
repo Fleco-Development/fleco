@@ -61,7 +61,13 @@ export default class ModlogCommand extends Command {
 										.setName('value')
 										.setDescription('Sets the value for the modlog setting'),
 								),
+						)
+						.addSubcommand(command =>
+							command
+								.setName('show')
+								.setDescription('Displays all of the logging settings.'),
 						),
+
 				)
 				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 				.setDMPermission(false),
@@ -125,10 +131,55 @@ export default class ModlogCommand extends Command {
 	async logging(interaction: ChatInputCommandInteraction) {
 
 		switch (interaction.options.getSubcommand(true)) {
+		case 'show':
+			await this.loggingShow(interaction);
+			break;
 		case 'edit':
 			await this.loggingEdit(interaction);
 			break;
 		}
+
+	}
+
+	async loggingShow(interaction: ChatInputCommandInteraction) {
+
+		const server = await this.client.db.server.findUnique({
+			where: {
+				id: interaction.guild?.id,
+			},
+			include: {
+				config: true,
+			},
+		});
+
+		if (!server || !server.config) {
+			await interaction.reply('to-do');
+			return;
+		}
+
+		const logTestEmbed = new EmbedBuilder()
+			.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+			.addFields(
+				{
+					name: 'Log Categories:',
+					value: '**```diff\nBans/Unbans:\n+ Enabled\nKicks:\n- Disabled\nWarn/Mutes:\n+ Enabled\n```**',
+					inline: true,
+				},
+				{
+					name: 'General Settings:',
+					value: '**Modlog Channel:** <#929839887392329749>',
+					inline: true,
+				},
+				{
+					name: 'Statistics:',
+					value: '**Total Events Logged:** 98\n**Total Ban/Unban Events:** 15\n**Total Kick Events:** 30\n**Total Warn/Mute Events:** 53',
+					inline: true,
+				},
+			)
+			.setTimestamp()
+			.setColor('Blue');
+
+		await interaction.reply({ embeds : [ logTestEmbed ] });
 
 	}
 
