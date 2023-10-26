@@ -229,7 +229,8 @@ export default class ModlogCommand extends Command {
 		// const firstPageButton = new ButtonBuilder()
 		// 	.setCustomId('first_page')
 		// 	.setEmoji('⏪')
-		// 	.setLabel('First Page');
+		// 	.setLabel('First Page')
+		// 	.setStyle(ButtonStyle.Secondary);
 
 		const lastPageButton = new ButtonBuilder()
 			.setCustomId('last_page')
@@ -261,10 +262,47 @@ export default class ModlogCommand extends Command {
 
 		}
 
+		const mainRow = new ActionRowBuilder<ButtonBuilder>()
+			.addComponents(nextPageButton);
+
+		if (paginatedLogs.totalPages > 1) {
+			mainRow.addComponents(lastPageButton);
+		}
 
 		testEmbed.addFields(this.generateFields(userModlogs));
 
-		await interaction.reply({ embeds: [ testEmbed ] });
+		const _interactionMsg = await interaction.reply({ embeds: [ testEmbed ] });
+
+		// const collectorFilter = (i: MessageComponentInteraction) => {
+		// 	return i.user.id === interaction.user.id;
+		// };
+
+		// let currentPage = 0;
+
+		// const collector = interactionMsg.createMessageComponentCollector({ componentType: ComponentType.Button, filter: collectorFilter, time: 60_000 });
+
+		// collector.on('collect', i => {
+
+		// 	switch (i.customId) {
+
+		// 	case 'next_page':
+		// 		currentPage++;
+
+
+		// 		break;
+		// 	case 'back_page':
+		// 		currentPage--;
+		// 		break;
+		// 	case 'first_page':
+		// 		currentPage = 0;
+		// 		break;
+		// 	case 'last_page':
+		// 		currentPage = paginatedLogs.totalPages - 1;
+		// 		break;
+
+		// 	}
+
+		// });
 
 	}
 
