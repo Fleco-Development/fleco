@@ -163,39 +163,6 @@ export default class ModlogCommand extends Command {
 
 		const testEmbed = new EmbedBuilder()
 			.setAuthor({ name: 'Fleco Modlogs', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
-			// .addFields(
-			// 	{
-			// 		name: 'Case #20 | Warning :',
-			// 		value: '- **Reason:** Pogging in general chat\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// 	{
-			// 		name: 'Case #5 | Kick :',
-			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// 	{
-			// 		name: 'Case #21 | Ban :',
-			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Ban End:**\n - **Date:** <t:1698245210:d>\n - **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// 	{
-			// 		name: 'Case #20 | Warning :',
-			// 		value: '- **Reason:** Pogging in general chat\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// 	{
-			// 		name: 'Case #5 | Kick :',
-			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// 	{
-			// 		name: 'Case #6 | Mute :',
-			// 		value: '- **Reason:** Said "Lorem Ipsum"\n- **Date:** <t:1698245210:d>\n- **Time:** <t:1698245210:t>\n- **Mute End:**\n - **Date:** <t:1698245210:d>\n - **Time:** <t:1698245210:t>\n- **Mod:** shanec.',
-			// 		inline: true,
-			// 	},
-			// )
-			// .setFooter({ text: 'Total Logs: 6 | Page 1/1' })
 			.setColor('Blue');
 
 		const user = interaction.options.getUser('user', true);
@@ -222,87 +189,128 @@ export default class ModlogCommand extends Command {
 
 		const paginatedLogs = paginateArray(userModlogs, 6);
 
-		// const collectorFilter = (i: MessageComponentInteraction) => {
-		// 	return i.user.id === interaction.user.id;
-		// };
-
-		// const firstPageButton = new ButtonBuilder()
-		// 	.setCustomId('first_page')
-		// 	.setEmoji('⏪')
-		// 	.setLabel('First Page')
-		// 	.setStyle(ButtonStyle.Secondary);
+		const firstPageButton = new ButtonBuilder()
+			.setCustomId('first_page')
+			.setEmoji('⏪')
+			.setStyle(ButtonStyle.Secondary);
 
 		const lastPageButton = new ButtonBuilder()
 			.setCustomId('last_page')
 			.setEmoji('⏩')
-			.setLabel('Last Page')
 			.setStyle(ButtonStyle.Secondary);
 
 		const nextPageButton = new ButtonBuilder()
 			.setCustomId('next_page')
 			.setEmoji('▶️')
-			.setLabel('Next')
 			.setStyle(ButtonStyle.Secondary);
 
-		// const backPageButton = new ButtonBuilder()
-		// 	.setCustomId('back_page')
-		// 	.setEmoji('◀️')
-		// 	.setLabel('Back')
-		// 	.setStyle(ButtonStyle.Secondary);
+		const backPageButton = new ButtonBuilder()
+			.setCustomId('back_page')
+			.setEmoji('◀️')
+			.setStyle(ButtonStyle.Secondary);
+
+		const exitPageButton = new ButtonBuilder()
+			.setCustomId('exit')
+			// If someone can find a better emoji for this that would be greatly appreciated.
+			.setEmoji('✖')
+			.setStyle(ButtonStyle.Danger);
 
 		if (paginatedLogs.totalPages == 1) {
 
-			const mainRow = new ActionRowBuilder<ButtonBuilder>()
-				.addComponents(nextPageButton, lastPageButton);
-
 			testEmbed.addFields(this.generateFields(paginatedLogs.pages[0]));
 
-			await interaction.reply({ embeds: [ testEmbed ], components: [ mainRow ] });
+			await interaction.reply({ embeds: [ testEmbed ], ephemeral: true });
 			return;
 
 		}
 
 		const mainRow = new ActionRowBuilder<ButtonBuilder>()
-			.addComponents(nextPageButton);
+			.addComponents(firstPageButton.setDisabled(true), backPageButton.setDisabled(true), nextPageButton, lastPageButton.setDisabled(true), exitPageButton);
 
-		if (paginatedLogs.totalPages > 1) {
-			mainRow.addComponents(lastPageButton);
-		}
+		testEmbed.addFields(this.generateFields(paginatedLogs.pages[0]));
+		testEmbed.setFooter({ text: `Page: 1/${paginatedLogs.totalPages} | Total Logs: ${paginatedLogs.totalItems}` });
 
-		testEmbed.addFields(this.generateFields(userModlogs));
+		const interactionMsg = await interaction.reply({ embeds: [ testEmbed ], components: [ mainRow ], ephemeral: true });
 
-		const _interactionMsg = await interaction.reply({ embeds: [ testEmbed ] });
+		const collectorFilter = (i: MessageComponentInteraction) => {
+			return i.user.id === interaction.user.id;
+		};
 
-		// const collectorFilter = (i: MessageComponentInteraction) => {
-		// 	return i.user.id === interaction.user.id;
-		// };
+		let currentPage = 0;
 
-		// let currentPage = 0;
+		const collector = interactionMsg.createMessageComponentCollector({ componentType: ComponentType.Button, filter: collectorFilter, time: 60_000 });
+		const row = new ActionRowBuilder<ButtonBuilder>();
 
-		// const collector = interactionMsg.createMessageComponentCollector({ componentType: ComponentType.Button, filter: collectorFilter, time: 60_000 });
+		collector.on('end', async () => {
 
-		// collector.on('collect', i => {
+			await interactionMsg.edit({ components: [] });
 
-		// 	switch (i.customId) {
+		});
 
-		// 	case 'next_page':
-		// 		currentPage++;
+		collector.on('collect', async i => {
+
+			await i.deferUpdate();
+
+			row.setComponents([]);
+
+			testEmbed.spliceFields(0, testEmbed.data.fields!.length);
+
+			switch (i.customId) {
+
+			case 'next_page':
+				currentPage++;
+				break;
+			case 'back_page':
+				currentPage--;
+				break;
+			case 'first_page':
+				currentPage = 0;
+				break;
+			case 'last_page':
+				currentPage = paginatedLogs.totalPages - 1;
+				break;
+
+			case 'exit':
+				collector.stop('graceful');
+				return;
+
+			default:
+				return;
+
+			}
+
+			testEmbed.setFooter({ text: `Page: ${currentPage + 1}/${paginatedLogs.totalPages} | Total Logs: ${paginatedLogs.totalItems}` });
+			testEmbed.addFields(this.generateFields(paginatedLogs.pages[currentPage]));
+
+			firstPageButton.setDisabled(true);
+			backPageButton.setDisabled(true);
+			nextPageButton.setDisabled(true);
+			lastPageButton.setDisabled(true);
 
 
-		// 		break;
-		// 	case 'back_page':
-		// 		currentPage--;
-		// 		break;
-		// 	case 'first_page':
-		// 		currentPage = 0;
-		// 		break;
-		// 	case 'last_page':
-		// 		currentPage = paginatedLogs.totalPages - 1;
-		// 		break;
+			if (paginatedLogs.totalPages > 1) {
+				if (currentPage > 0) {
+					backPageButton.setDisabled(false);
+				}
 
-		// 	}
+				if (currentPage > 1) {
+					firstPageButton.setDisabled(false);
+				}
 
-		// });
+				if (currentPage < paginatedLogs.totalPages - 1) {
+					nextPageButton.setDisabled(false);
+				}
+
+				if (currentPage < paginatedLogs.totalPages - 2) {
+					lastPageButton.setDisabled(false);
+				}
+			}
+
+			row.addComponents(firstPageButton, backPageButton, nextPageButton, lastPageButton, exitPageButton);
+
+			await i.editReply({ embeds: [ testEmbed ], components: [row] });
+
+		});
 
 	}
 
