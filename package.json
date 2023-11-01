@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Fleco-Development/fleco#readme",
   "dependencies": {
+    "@fleco/duration": "^0.1.4",
     "@js-temporal/polyfill": "^0.4.4",
     "@prisma/client": "latest",
     "commander": "^11.1.0",

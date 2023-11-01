@@ -227,7 +227,7 @@ export default class AuditLogEntryCreate extends Event {
 						data: {
 							id: nanoid(),
 							serverID: guild.id,
-							type: 'ban',
+							type: 'mute',
 							reason: entry.reason ?? 'none',
 							userID: user.id,
 							modID: mod.id,
