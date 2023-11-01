@@ -85,6 +85,17 @@ export default class ModlogCommand extends Command {
 										.setDescription('Guild member')
 										.setRequired(true),
 								),
+						)
+						.addSubcommand(command =>
+							command
+								.setName('clear')
+								.setDescription('Clears a users modlog')
+								.addUserOption(option =>
+									option
+										.setName('user')
+										.setDescription('Guild member')
+										.setRequired(true),
+								),
 						),
 				)
 				.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
@@ -155,7 +166,39 @@ export default class ModlogCommand extends Command {
 		case 'get':
 			await this.userGet(interaction);
 			break;
+		case 'clear':
+			await this.userClear(interaction);
+			break;
 		}
+
+	}
+
+	async userClear(interaction: ChatInputCommandInteraction) {
+
+		const user = interaction.options.getUser('user', true);
+
+		const userModlogs = await this.client.db.modlog.deleteMany({
+			where: {
+				userID: user.id,
+			},
+		});
+
+		if (userModlogs.count === 0) {
+
+			const noLogEmbed = new EmbedBuilder()
+				.setDescription(`<@${user.id}> has no logs!`)
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [ noLogEmbed ], ephemeral: true });
+			return;
+
+		}
+
+		const clearLogEmbed = new EmbedBuilder()
+			.setDescription(`Cleared **${userModlogs.count}** logs from <@${user.id}>`)
+			.setColor('Green');
+
+		await interaction.reply({ embeds: [ clearLogEmbed ], ephemeral: true });
 
 	}
 
