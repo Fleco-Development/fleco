@@ -1,10 +1,21 @@
-import { ChatInputCommandInteraction, EmbedBuilder, GuildVerificationLevel, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, GuildNSFWLevel, GuildVerificationLevel, SlashCommandBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 import { Temporal } from '@js-temporal/polyfill';
 
 type VerificationLevel = {
 	[Key in GuildVerificationLevel]: { title: string, requirements: string };
 }
+
+type NsfwLevel = {
+	[Key in GuildNSFWLevel]: string;
+}
+
+const NsfwLevels: NsfwLevel = {
+	0: 'Default',
+	1: 'Explicit',
+	2: 'Safe',
+	3: 'Age Restricted',
+};
 
 const VerificationLevels: VerificationLevel = {
 	0: {
@@ -41,6 +52,7 @@ export default class ServerInfoCommand extends Command {
 	}
 
 	async execute(interaction: ChatInputCommandInteraction) {
+
 		const createDate = Temporal.Instant.fromEpochMilliseconds(interaction.guild!.createdTimestamp).epochSeconds;
 		const ownerInfo = await interaction.guild?.fetchOwner();
 
@@ -55,6 +67,7 @@ export default class ServerInfoCommand extends Command {
 		const totalLinkedRoles = interaction.guild?.roles.cache.filter(r => r.tags?.guildConnections).size as number;
 
 		const verificationLevel = VerificationLevels[interaction.guild?.verificationLevel as GuildVerificationLevel];
+		const nsfwLevel = NsfwLevels[interaction.guild?.nsfwLevel as GuildNSFWLevel];
 
 		const serverEmbed = new EmbedBuilder()
 			.setTitle(`Info for ${interaction.guild?.name}`)
@@ -78,6 +91,10 @@ export default class ServerInfoCommand extends Command {
 				{
 					name: 'Verification Level:',
 					value: `- **Type**: ${verificationLevel.title}\n- **Requirements:** ${verificationLevel.requirements}`,
+				},
+				{
+					name: 'NSFW Level:',
+					value: `- **Type:** ${nsfwLevel}`,
 				},
 			)
 			.setColor('Blue')
