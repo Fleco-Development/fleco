@@ -30,7 +30,7 @@ export default class ModlogCommand extends Command {
 				.setDescription('Manage the modlog for the server')
 				.addSubcommand(command =>
 					command
-						.setName('create')
+						.setName('setup')
 						.setDescription('Setup modlogs for the server')
 						.addChannelOption(option =>
 							option
@@ -120,8 +120,8 @@ export default class ModlogCommand extends Command {
 		else {
 
 			switch (interaction.options.getSubcommand(true)) {
-			case 'create':
-				await this.create(interaction);
+			case 'setup':
+				await this.setup(interaction);
 				break;
 			}
 
@@ -129,7 +129,7 @@ export default class ModlogCommand extends Command {
 
 	}
 
-	async create(interaction: ChatInputCommandInteraction) {
+	async setup(interaction: ChatInputCommandInteraction) {
 
 		const channel = interaction.options.getChannel('log_channel', true);
 
