@@ -104,6 +104,10 @@ export default class ServerInfoCommand extends Command {
 			serverEmbed.setThumbnail(interaction.guild.iconURL({ extension: 'webp' }));
 		}
 
+		if (interaction.guild?.banner) {
+			serverEmbed.setImage(interaction.guild.bannerURL({ extension: 'webp' }));
+		}
+
 		await interaction.reply({ embeds: [ serverEmbed ] });
 
 	}
