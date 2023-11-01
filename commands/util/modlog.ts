@@ -478,12 +478,12 @@ ${server.config.modlog_warn ? '+ Enabled' : '- Disabled'}
 				},
 				{
 					name: '> ⚙ General Settings:',
-					value: `* Modlog Channel: <#${server.config.modlog_chan}>`,
+					value: `- Modlog Channel: <#${server.config.modlog_chan}>`,
 					inline: true,
 				},
 				{
 					name: '> 🚉 Statistics:',
-					value: `* Total Events Logged: \`${totalModCount}\`\n* Total Ban/Unban Events: \`${totalBanUnban}\`\n* Total Kick/Mute Events: \`${totalKickMute}\`\n* Total Warn Events: \`${totalWarn}\``,
+					value: `- Total Events Logged: **${totalModCount}**\n- Total Ban/Unban Events: **${totalBanUnban}**\n- Total Kick/Mute Events: **${totalKickMute}**\n- Total Warn Events: **${totalWarn}**`,
 					inline: true,
 				},
 			)
