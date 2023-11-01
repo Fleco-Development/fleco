@@ -386,21 +386,21 @@ export default class ModlogCommand extends Command {
 		}
 
 		const logTestEmbed = new EmbedBuilder()
-			.setAuthor({ name: 'Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
+			.setAuthor({ name: '⚙ | Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 			.addFields(
 				{
-					name: 'Log Categories:',
+					name: '> 🗞️ Log Categories:',
 					value: '**```diff\nBans/Unbans:\n+ Enabled\nKicks:\n- Disabled\nWarn/Mutes:\n+ Enabled\n```**',
 					inline: true,
 				},
 				{
-					name: 'General Settings:',
-					value: '**Modlog Channel:** <#929839887392329749>',
+					name: '> ⚙ General Settings:',
+					value: '* Modlog Channel: <#929839887392329749>',
 					inline: true,
 				},
 				{
-					name: 'Statistics:',
-					value: '**Total Events Logged:** 98\n**Total Ban/Unban Events:** 15\n**Total Kick Events:** 30\n**Total Warn/Mute Events:** 53',
+					name: '> 🚉 Statistics:',
+					value: '* Total Events Logged: \`98\`\n* Total Ban/Unban Events: \`15\`\n* Total Kick Events: \`30\`\n* Total Warn/Mute Events: \`53\`',
 					inline: true,
 				},
 			)
