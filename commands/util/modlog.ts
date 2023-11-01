@@ -12,12 +12,12 @@ const categoryInfo = {
 		desc: 'Logs any time a user is banned/unbanned on the server, if the person is banned with the bot and a duration has been set, it will also display the date of when they will be unbanned.',
 	},
 	modlog_kick: {
-		title: 'Kick Logs',
-		desc: 'Logs any time someone is kicked from the server ',
+		title: 'Kick/Mute Logs',
+		desc: 'Logs any time someone is kicked from the server or when a user is put in timeout. This uses the built-in timeout feature in Discord. **It cannot log when a user has been unmuted automatically due to how the Discord API works.**',
 	},
 	modlog_warn_mute: {
 		title: 'Warn/Mute Logs',
-		desc: 'Logs any time the warn command is used to warn another user or logs when a user is put in a timeout. This uses the built-in Timeout feature in Discord.  **It cannot log when a user has been unmuted automatically due to how the Discord API works.**',
+		desc: 'Logs any time a user has been warned.',
 	},
 };
 
@@ -380,34 +380,74 @@ export default class ModlogCommand extends Command {
 			},
 		});
 
+		const totalModCount = await this.client.db.modlog.count({
+			where: {
+				serverID: interaction.guild?.id,
+			},
+		});
+
+		const totalBanUnban = await this.client.db.modlog.count({
+			where: {
+				serverID: interaction.guild?.id,
+				OR: [
+					{ type: 'ban' },
+					{ type: 'unban' },
+				],
+			},
+		});
+
+		const totalKickMute = await this.client.db.modlog.count({
+			where: {
+				serverID: interaction.guild?.id,
+				OR: [
+					{ type: 'kick' },
+					{ type: 'mute' },
+				],
+			},
+		});
+
+		const totalWarn = await this.client.db.modlog.count({
+			where: {
+				serverID: interaction.guild?.id,
+				type: 'warn',
+			},
+		});
+
 		if (!server || !server.config) {
 			await interaction.reply('to-do');
 			return;
 		}
 
-		const logTestEmbed = new EmbedBuilder()
+		const loggingSettings = new EmbedBuilder()
 			.setAuthor({ name: '⚙ | Fleco Settings', iconURL: this.client.user?.displayAvatarURL({ extension: 'webp' }) })
 			.addFields(
 				{
 					name: '> 🗞️ Log Categories:',
-					value: '**```diff\nBans/Unbans:\n+ Enabled\nKicks:\n- Disabled\nWarn/Mutes:\n+ Enabled\n```**',
+					value: `**\`\`\`diff
+					Bans/Unbans:
+${server.config.modlog_ban ? '+ Enabled' : '- Disabled'}
+					Kicks:
+${server.config.modlog_kick_mute ? '+ Enabled' : '- Disabled'}
+					Warn/Mutes:
+${server.config.modlog_warn ? '+ Enabled' : '- Disabled'}
+					\`\`\`**`,
 					inline: true,
 				},
 				{
 					name: '> ⚙ General Settings:',
-					value: '* Modlog Channel: <#929839887392329749>',
+					value: `* Modlog Channel: <#${server.config.modlog_chan}>`,
 					inline: true,
 				},
 				{
 					name: '> 🚉 Statistics:',
-					value: '* Total Events Logged: \`98\`\n* Total Ban/Unban Events: \`15\`\n* Total Kick Events: \`30\`\n* Total Warn/Mute Events: \`53\`',
+					value: `* Total Events Logged: \`${totalModCount}\`\n* Total Ban/Unban Events: \`${totalBanUnban}\`\n* Total Kick/Mute Events: \`${totalKickMute}\`\n* Total Warn Events: \`${totalWarn}\``,
 					inline: true,
 				},
 			)
 			.setTimestamp()
 			.setColor('Blue');
 
-		await interaction.reply({ embeds : [ logTestEmbed ] });
+		await interaction.reply({ embeds : [ loggingSettings ] });
 
 	}
 
@@ -450,13 +490,13 @@ export default class ModlogCommand extends Command {
 
 		const kickMuteCatButton = new ButtonBuilder()
 			.setCustomId('modlog_kick_mute')
-			.setLabel('Kick Logs')
-			.setStyle(server.config['modlog_kick'] ? ButtonStyle.Success : ButtonStyle.Secondary);
+			.setLabel('Kick/Mute Logs')
+			.setStyle(server.config['modlog_kick_mute'] ? ButtonStyle.Success : ButtonStyle.Secondary);
 
 		const warnCatButton = new ButtonBuilder()
 			.setCustomId('modlog_warn')
-			.setLabel('Warn/Mute Logs')
-			.setStyle(server.config['modlog_warn_mute'] ? ButtonStyle.Success : ButtonStyle.Secondary);
+			.setLabel('Warn Logs')
+			.setStyle(server.config['modlog_warn'] ? ButtonStyle.Success : ButtonStyle.Secondary);
 
 		const collectorFilter = (i: MessageComponentInteraction) => {
 			return i.user.id === interaction.user.id;
