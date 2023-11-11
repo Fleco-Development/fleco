@@ -77,7 +77,7 @@ export default class MuteCommand extends Command {
 			await member?.disableCommunicationUntil(duration.endDate(), reason ? `${reason} - ${interaction.member?.user.username}` : `Timed out by ${interaction.member?.user.username}`);
 
 		}
-		catch (e) {
+		catch {
 
 			const cannotMuteEmbed = new EmbedBuilder()
 				.setDescription('Cannot mute user, please check the bot permissions/hierarchy')
