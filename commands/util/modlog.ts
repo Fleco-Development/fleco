@@ -371,7 +371,7 @@ export default class ModlogCommand extends Command {
 
 		for (const modlog of logs) {
 
-			const date = Temporal.Instant.from(modlog.date).epochSeconds;
+			const date = Temporal.Instant.from(modlog.endDate as string).epochSeconds;
 
 			let fieldValueString = fieldLayout
 				.replace('{{modlog_reason}}', modlog.reason)

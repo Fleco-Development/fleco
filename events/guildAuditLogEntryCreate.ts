@@ -29,6 +29,8 @@ export default class AuditLogEntryCreate extends Event {
 
 		let msg: Message | null = null;
 
+		if (mod.id === this.client.user?.id) return;
+
 		switch (entry.action) {
 
 		case AuditLogEvent.MemberBanAdd:
@@ -128,6 +130,7 @@ export default class AuditLogEntryCreate extends Event {
 					logMsgID: msg?.id,
 				},
 			});
+
 
 			break;
 
