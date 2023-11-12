@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { Duration } from '@fleco/duration';
 import { Command } from '../../types.js';
 import { nanoid } from 'nanoid';
@@ -29,7 +29,7 @@ export default class MuteCommand extends Command {
 						.setDescription('Reason for mute')
 						.setMaxLength(300),
 				)
-				.setDefaultMemberPermissions(PermissionsBitField.Flags.MuteMembers)
+				.setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers)
 				.setDMPermission(false),
 		);
 	}
@@ -38,6 +38,17 @@ export default class MuteCommand extends Command {
 
 		const memberFetch = interaction.options.getUser('user', true);
 		const member = await interaction.guild?.members.fetch(memberFetch.id);
+
+		if (!member) {
+
+			const memberNoExist = new EmbedBuilder()
+				.setDescription('Member is not in the server!')
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [ memberNoExist ], ephemeral: true });
+			return;
+
+		}
 
 		const reason = interaction.options.getString('reason', false);
 
@@ -85,7 +96,6 @@ export default class MuteCommand extends Command {
 
 			await interaction.reply({ embeds: [ cannotMuteEmbed ], ephemeral: true });
 			return;
-
 
 		}
 

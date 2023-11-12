@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { Command } from '../../types.js';
 
 export default class UnmuteCommand extends Command {
@@ -17,9 +17,10 @@ export default class UnmuteCommand extends Command {
 				.addStringOption(option =>
 					option
 						.setName('reason')
-						.setDescription('Reason for unmute'),
+						.setDescription('Reason for unmute')
+						.setMaxLength(300),
 				)
-				.setDefaultMemberPermissions(PermissionsBitField.Flags.MuteMembers)
+				.setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers)
 				.setDMPermission(false),
 		);
 	}
@@ -28,6 +29,17 @@ export default class UnmuteCommand extends Command {
 
 		const memberFetch = interaction.options.getUser('user', true);
 		const member = await interaction.guild?.members.fetch(memberFetch.id);
+
+		if (!member) {
+
+			const memberNoExist = new EmbedBuilder()
+				.setDescription('Member is not in the server!')
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [ memberNoExist ], ephemeral: true });
+			return;
+
+		}
 
 		const reason = interaction.options.getString('reason', false);
 
